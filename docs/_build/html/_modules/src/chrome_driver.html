@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.chrome_driver &mdash; Chrome Driver EXE Update 0.2.3 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Chrome Driver EXE Update
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Chrome Driver EXE Update</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">src.chrome_driver</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for src.chrome_driver</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Module that ill create the webdriver.</span>
+
+<span class="sd">It downloads files too.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">selenium</span> <span class="kn">import</span> <span class="n">webdriver</span>
+<span class="kn">from</span> <span class="nn">selenium.webdriver.chrome.service</span> <span class="kn">import</span> <span class="n">Service</span> <span class="k">as</span> <span class="n">ChromeService</span>
+<span class="kn">from</span> <span class="nn">selenium.webdriver.support.ui</span> <span class="kn">import</span> <span class="n">WebDriverWait</span>
+<span class="kn">from</span> <span class="nn">selenium.common.exceptions</span> <span class="kn">import</span> <span class="n">TimeoutException</span><span class="p">,</span> <span class="n">SessionNotCreatedException</span>
+
+<span class="kn">from</span> <span class="nn">win32com.client</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ChromeDriver"><a class="viewcode-back" href="../../src.html#src.chrome_driver.ChromeDriver">[docs]</a><span class="k">class</span> <span class="nc">ChromeDriver</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create the Webdriver.</span>
+
+<span class="sd">    In case that the webdriver is outdated checks the version of chrome</span>
+<span class="sd">    and then downloads the chromedriver corresponding to the new version.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        downloads_path (str): Path to donwloads files.</span>
+<span class="sd">        headless (bool): Run with window or not.</span>
+<span class="sd">        downloads_type (str, optional): Type of file to be downloaded.</span>
+<span class="sd">            Defaults to None.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        downloads_path (str): Path to donwloads files.</span>
+<span class="sd">        headless (bool): Run with window or not.</span>
+<span class="sd">        downloads_type (str, optional): Type of file to be downloaded.</span>
+<span class="sd">            Defaults to None.</span>
+<span class="sd">        driver_executable_path (str, optional): Path to chromedriver.</span>
+<span class="sd">            Defaults to None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">downloads_path</span><span class="p">,</span> <span class="n">headless</span><span class="p">,</span> <span class="n">driver_executable</span><span class="p">,</span>
+                 <span class="n">software_dir</span><span class="p">,</span> <span class="n">downloads_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">downloads_path</span> <span class="o">=</span> <span class="n">downloads_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">headless</span> <span class="o">=</span> <span class="n">headless</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">downloads_type</span> <span class="o">=</span> <span class="n">downloads_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">driver_executable_path</span> <span class="o">=</span> <span class="n">driver_executable</span> <span class="k">if</span> <span class="n">driver_executable</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">driver_executable_path</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">software_path</span> <span class="o">=</span> <span class="n">software_dir</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">driver_executable_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_new_version</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="ChromeDriver.create_driver"><a class="viewcode-back" href="../../src.html#src.chrome_driver.ChromeDriver.create_driver">[docs]</a>    <span class="k">def</span> <span class="nf">create_driver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates driver with all the options and start.</span>
+
+<span class="sd">        If error, **outdated** start process to download new chromedriver.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Webdriver: Driver to handle browser.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            SessionNotCreatedException: When driver is outdated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">options</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">ChromeOptions</span><span class="p">()</span>
+        <span class="c1"># Cross-Origin domain disable resolve IP address</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--dns-prefetch-disable&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Change download default to temp</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--browser.download.folderList=2&quot;</span><span class="p">)</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--browser.download.dir=&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">downloads_path</span><span class="p">)</span>
+
+        <span class="c1"># Download without asking</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">downloads_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--browser.helperApps.neverAsk.saveToDisk=&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">downloads_type</span><span class="p">)</span>
+
+        <span class="c1"># Disable a visible UI shell.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">headless</span><span class="p">:</span>
+            <span class="n">options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--headless&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Improvement speed and needed for windows headless driver</span>
+        <span class="n">options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--disable-gpu&quot;</span><span class="p">)</span>
+
+        <span class="n">options</span><span class="o">.</span><span class="n">add_experimental_option</span><span class="p">(</span><span class="s1">&#39;excludeSwitches&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;enable-logging&#39;</span><span class="p">])</span>
+
+        <span class="n">options</span><span class="o">.</span><span class="n">add_experimental_option</span><span class="p">(</span><span class="s1">&#39;prefs&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;plugins.always_open_pdf_externally&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+
+        <span class="n">timeout</span> <span class="o">=</span> <span class="mi">30</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">service</span> <span class="o">=</span> <span class="n">ChromeService</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">driver_executable_path</span><span class="p">)</span>
+                <span class="n">driver</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">Chrome</span><span class="p">(</span>
+                    <span class="n">service</span><span class="o">=</span><span class="n">service</span><span class="p">,</span>
+                    <span class="n">options</span><span class="o">=</span><span class="n">options</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="n">SessionNotCreatedException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Webdriver is outdated, starting download new one...&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">driver_executable_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_new_version</span><span class="p">()</span>
+                <span class="n">timeout</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">timeout</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Driver got an error starting: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="c1"># Allows Chrome to download when in headless mode</span>
+        <span class="n">driver</span><span class="o">.</span><span class="n">command_executor</span><span class="o">.</span><span class="n">_commands</span><span class="p">[</span><span class="s2">&quot;send_command&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="s1">&#39;/session/$sessionId/chromium/send_command&#39;</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;cmd&#39;</span><span class="p">:</span> <span class="s1">&#39;Page.setDownloadBehavior&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;behavior&#39;</span><span class="p">:</span> <span class="s1">&#39;allow&#39;</span><span class="p">,</span> <span class="s1">&#39;downloadPath&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">downloads_path</span><span class="p">}</span>
+        <span class="p">}</span>
+        <span class="n">driver</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;send_command&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">driver</span></div>
+
+<div class="viewcode-block" id="ChromeDriver.find_chrome_exe"><a class="viewcode-back" href="../../src.html#src.chrome_driver.ChromeDriver.find_chrome_exe">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">find_chrome_exe</span><span class="p">(</span><span class="n">search_file</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find in pc driver the Chrome exe.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            search_file (str): file to search.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            path: Path to Chrome exe.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            FileNotFoundError: Doesn&#39;t find chrome.exe in **C:** drive.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">search_file</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;chrome&quot;</span><span class="p">):</span>
+            <span class="n">common_chrome_path</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Program Files\Google\Chrome\Application\chrome.exe&quot;</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">common_chrome_path</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">common_chrome_path</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">file</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Pro*</span><span class="se">\\</span><span class="s2">**</span><span class="se">\\</span><span class="si">{</span><span class="n">search_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">file</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">file</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Cannot find Google Chrome in the root directory.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;Cannot find Google Chrome, please be sure&quot;</span>
+                                        <span class="s2">&quot; to install it with the root directory&quot;</span>
+                                        <span class="sa">r</span><span class="s2">&quot; &#39;C:\Program Files\Google\Chrome\Application&#39;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ChromeDriver.check_version_of_chrome"><a class="viewcode-back" href="../../src.html#src.chrome_driver.ChromeDriver.check_version_of_chrome">[docs]</a>    <span class="k">def</span> <span class="nf">check_version_of_chrome</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks version of current Chrome browser installed</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Version of the current Chrome.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">chrome_exe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_chrome_exe</span><span class="p">(</span><span class="s2">&quot;chrome.exe&quot;</span><span class="p">)</span>
+        <span class="n">file_info</span> <span class="o">=</span> <span class="n">Dispatch</span><span class="p">(</span><span class="s2">&quot;Scripting.FileSystemObject&quot;</span><span class="p">)</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="n">file_info</span><span class="o">.</span><span class="n">GetFileVersion</span><span class="p">(</span><span class="n">chrome_exe</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">version</span></div>
+
+<div class="viewcode-block" id="ChromeDriver.find_last_version_link"><a class="viewcode-back" href="../../src.html#src.chrome_driver.ChromeDriver.find_last_version_link">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">find_last_version_link</span><span class="p">(</span><span class="n">curr_version</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the link of the right version of the chromedriver.exe.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            curr_version (str): Current Version of the Chrome Browser installed.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Link to new version of the chromedriver.exe.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://chromedriver.chromium.org/downloads&quot;</span><span class="p">)</span>
+
+        <span class="n">pattern_href</span> <span class="o">=</span> <span class="sa">rf</span><span class="s2">&quot;https://chromedriver.storage.googleapis.com/index.html\?path=(</span><span class="si">{</span><span class="n">curr_version</span><span class="si">}</span><span class="s2">.[\d\.]+)/&quot;</span>
+        <span class="n">pattern_version</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;path=([\d\.]+)/&quot;</span><span class="p">)</span>
+        <span class="n">pattern_last_version</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;(\d+)\.(\d+)\.(\d+)\.(\d+)&quot;</span>
+
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="s2">&quot;html.parser&quot;</span><span class="p">)</span>
+        <span class="c1"># Find all links in the page</span>
+        <span class="n">links</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="n">href</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern_href</span><span class="p">))</span>
+        <span class="n">links</span> <span class="o">=</span> <span class="p">[</span><span class="n">link</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;href&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">links</span><span class="p">]</span>
+        <span class="c1"># Finds the versions in the links</span>
+        <span class="n">versions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">pattern_version</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">links</span><span class="p">))</span>
+        <span class="c1"># Finds the lastest version 2.5.3 &gt; 2.2.5</span>
+        <span class="n">latest_version</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">versions</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">l</span><span class="p">:</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern_last_version</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">()])</span>
+        <span class="k">return</span> <span class="n">latest_version</span></div>
+
+<div class="viewcode-block" id="ChromeDriver.download_new_version"><a class="viewcode-back" href="../../src.html#src.chrome_driver.ChromeDriver.download_new_version">[docs]</a>    <span class="k">def</span> <span class="nf">download_new_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Donwloads the new version of the chromedriver.exe</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: path of the new chromedriver.exe.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Download webdriver.&quot;</span><span class="p">)</span>
+
+        <span class="n">chrome_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_version_of_chrome</span><span class="p">()</span>
+        <span class="n">target_version</span> <span class="o">=</span> <span class="n">chrome_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">latest_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_last_version_link</span><span class="p">(</span><span class="n">target_version</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Browser version: </span><span class="si">{</span><span class="n">chrome_version</span><span class="si">}</span><span class="se">\n</span><span class="s2">Url_new_version: </span><span class="si">{</span><span class="n">latest_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">base_url</span> <span class="o">=</span> <span class="s2">&quot;https://chromedriver.storage.googleapis.com/&quot;</span>
+        <span class="n">zip_endpoint</span> <span class="o">=</span> <span class="s2">&quot;chromedriver_win32.zip&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">base_url</span> <span class="o">+</span> <span class="n">latest_version</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">zip_endpoint</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">))</span>
+        <span class="n">z</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">software_path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">software_path</span><span class="p">,</span> <span class="s2">&quot;chromedriver.exe&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ChromeDriver.is_downloaded"><a class="viewcode-back" href="../../src.html#src.chrome_driver.ChromeDriver.is_downloaded">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_downloaded</span><span class="p">(</span><span class="n">download_path</span><span class="p">,</span> <span class="n">current_files</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the download is done by seeing with dir has</span>
+<span class="sd">        a new number of files.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            download_path (str): Path to download dirs.</span>
+<span class="sd">            current_files (int): Number of files in `path_download`</span>
+<span class="sd">                before download.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: Exists a new file in `path_download`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">download_path</span><span class="p">))</span> <span class="o">==</span> <span class="n">current_files</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="ChromeDriver.change_name_last_file"><a class="viewcode-back" href="../../src.html#src.chrome_driver.ChromeDriver.change_name_last_file">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">change_name_last_file</span><span class="p">(</span><span class="n">name_file</span><span class="p">,</span> <span class="n">download_path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Change last file that appear in dir to a new name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name_file (str): File new name.</span>
+<span class="sd">            download_path (str): Path to download file.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: New named file in absolute path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">abs_new_name_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">download_path</span><span class="p">,</span> <span class="n">name_file</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Changing last downloaded file to: </span><span class="si">{</span><span class="n">abs_new_name_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">download_path</span><span class="p">)</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">download_path</span><span class="p">,</span> <span class="n">basename</span><span class="p">)</span> <span class="k">for</span> <span class="n">basename</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span>
+
+        <span class="c1"># Last file in dir</span>
+        <span class="n">old_file</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getctime</span><span class="p">)</span>
+
+        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">old_file</span><span class="p">,</span> <span class="n">abs_new_name_file</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">abs_new_name_file</span></div>
+
+<div class="viewcode-block" id="ChromeDriver.download_file_from_url"><a class="viewcode-back" href="../../src.html#src.chrome_driver.ChromeDriver.download_file_from_url">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">download_file_from_url</span><span class="p">(</span><span class="n">driver</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">name_file</span><span class="p">,</span> <span class="n">download_path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Downloads to `downloads_path` the url file and gives a name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            driver (any): Driver that controls the browser.</span>
+<span class="sd">            url (str): Url to download file.</span>
+<span class="sd">            name_file (str): The name to rename file downloaded.</span>
+<span class="sd">            download_path (str): Path to download file.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: New file absolute path.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TimeoutException: File doesn&#39;t download in time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting download file: </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">current_n_files</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">download_path</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">driver</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+            <span class="n">WebDriverWait</span><span class="p">(</span><span class="n">driver</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">until</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">ChromeDriver</span><span class="o">.</span><span class="n">is_downloaded</span><span class="p">(</span><span class="n">download_path</span><span class="p">,</span> <span class="n">current_n_files</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">TimeoutException</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot download file, url: </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_file_path</span> <span class="o">=</span> <span class="n">ChromeDriver</span><span class="o">.</span><span class="n">change_name_last_file</span><span class="p">(</span><span class="n">name_file</span><span class="p">,</span> <span class="n">download_path</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">new_file_path</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">rep</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;ChromeDriver(driver_executable_path=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">driver_executable_path</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;headless=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">headless</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;downloads_path=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">downloads_path</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;downloads_type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">downloads_type</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">rep</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Frederico Gago.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

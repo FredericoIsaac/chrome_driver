@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src package &mdash; Chrome Driver EXE Update 0.2.3 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="src" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Chrome Driver EXE Update
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">src package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.chrome_driver">src.chrome_driver module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.chrome_driver.ChromeDriver"><code class="docutils literal notranslate"><span class="pre">ChromeDriver</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Chrome Driver EXE Update</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">src</a></li>
+      <li class="breadcrumb-item active">src package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/src.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="src-package">
+<h1>src package<a class="headerlink" href="#src-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-src.chrome_driver">
+<span id="src-chrome-driver-module"></span><h2>src.chrome_driver module<a class="headerlink" href="#module-src.chrome_driver" title="Permalink to this heading"></a></h2>
+<p>Module that ill create the webdriver.</p>
+<p>It downloads files too.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.chrome_driver.ChromeDriver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.chrome_driver.</span></span><span class="sig-name descname"><span class="pre">ChromeDriver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">downloads_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headless</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">driver_executable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">software_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downloads_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/chrome_driver.html#ChromeDriver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.chrome_driver.ChromeDriver" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Create the Webdriver.</p>
+<p>In case that the webdriver is outdated checks the version of chrome
+and then downloads the chromedriver corresponding to the new version.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>downloads_path</strong> (<em>str</em>) – Path to donwloads files.</p></li>
+<li><p><strong>headless</strong> (<em>bool</em>) – Run with window or not.</p></li>
+<li><p><strong>downloads_type</strong> (<em>str</em><em>, </em><em>optional</em>) – Type of file to be downloaded.
+Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.chrome_driver.ChromeDriver.downloads_path">
+<span class="sig-name descname"><span class="pre">downloads_path</span></span><a class="headerlink" href="#src.chrome_driver.ChromeDriver.downloads_path" title="Permalink to this definition"></a></dt>
+<dd><p>Path to donwloads files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.chrome_driver.ChromeDriver.headless">
+<span class="sig-name descname"><span class="pre">headless</span></span><a class="headerlink" href="#src.chrome_driver.ChromeDriver.headless" title="Permalink to this definition"></a></dt>
+<dd><p>Run with window or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.chrome_driver.ChromeDriver.downloads_type">
+<span class="sig-name descname"><span class="pre">downloads_type</span></span><a class="headerlink" href="#src.chrome_driver.ChromeDriver.downloads_type" title="Permalink to this definition"></a></dt>
+<dd><p>Type of file to be downloaded.
+Defaults to None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.chrome_driver.ChromeDriver.driver_executable_path">
+<span class="sig-name descname"><span class="pre">driver_executable_path</span></span><a class="headerlink" href="#src.chrome_driver.ChromeDriver.driver_executable_path" title="Permalink to this definition"></a></dt>
+<dd><p>Path to chromedriver.
+Defaults to None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.chrome_driver.ChromeDriver.change_name_last_file">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">change_name_last_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/chrome_driver.html#ChromeDriver.change_name_last_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.chrome_driver.ChromeDriver.change_name_last_file" title="Permalink to this definition"></a></dt>
+<dd><p>Change last file that appear in dir to a new name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name_file</strong> (<em>str</em>) – File new name.</p></li>
+<li><p><strong>download_path</strong> (<em>str</em>) – Path to download file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>New named file in absolute path.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.chrome_driver.ChromeDriver.check_version_of_chrome">
+<span class="sig-name descname"><span class="pre">check_version_of_chrome</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/chrome_driver.html#ChromeDriver.check_version_of_chrome"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.chrome_driver.ChromeDriver.check_version_of_chrome" title="Permalink to this definition"></a></dt>
+<dd><p>Checks version of current Chrome browser installed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Version of the current Chrome.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.chrome_driver.ChromeDriver.create_driver">
+<span class="sig-name descname"><span class="pre">create_driver</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/chrome_driver.html#ChromeDriver.create_driver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.chrome_driver.ChromeDriver.create_driver" title="Permalink to this definition"></a></dt>
+<dd><p>Creates driver with all the options and start.</p>
+<p>If error, <strong>outdated</strong> start process to download new chromedriver.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Driver to handle browser.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Webdriver</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>SessionNotCreatedException</strong> – When driver is outdated.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.chrome_driver.ChromeDriver.download_file_from_url">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">download_file_from_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">driver</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/chrome_driver.html#ChromeDriver.download_file_from_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.chrome_driver.ChromeDriver.download_file_from_url" title="Permalink to this definition"></a></dt>
+<dd><p>Downloads to <cite>downloads_path</cite> the url file and gives a name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>driver</strong> (<em>any</em>) – Driver that controls the browser.</p></li>
+<li><p><strong>url</strong> (<em>str</em>) – Url to download file.</p></li>
+<li><p><strong>name_file</strong> (<em>str</em>) – The name to rename file downloaded.</p></li>
+<li><p><strong>download_path</strong> (<em>str</em>) – Path to download file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>New file absolute path.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TimeoutException</strong> – File doesn’t download in time.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.chrome_driver.ChromeDriver.download_new_version">
+<span class="sig-name descname"><span class="pre">download_new_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/chrome_driver.html#ChromeDriver.download_new_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.chrome_driver.ChromeDriver.download_new_version" title="Permalink to this definition"></a></dt>
+<dd><p>Donwloads the new version of the chromedriver.exe</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>path of the new chromedriver.exe.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.chrome_driver.ChromeDriver.find_chrome_exe">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">find_chrome_exe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/chrome_driver.html#ChromeDriver.find_chrome_exe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.chrome_driver.ChromeDriver.find_chrome_exe" title="Permalink to this definition"></a></dt>
+<dd><p>Find in pc driver the Chrome exe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>search_file</strong> (<em>str</em>) – file to search.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Path to Chrome exe.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>path</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>FileNotFoundError</strong> – Doesn’t find chrome.exe in <strong>C:</strong> drive.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.chrome_driver.ChromeDriver.find_last_version_link">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">find_last_version_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curr_version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/chrome_driver.html#ChromeDriver.find_last_version_link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.chrome_driver.ChromeDriver.find_last_version_link" title="Permalink to this definition"></a></dt>
+<dd><p>Gets the link of the right version of the chromedriver.exe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>curr_version</strong> (<em>str</em>) – Current Version of the Chrome Browser installed.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Link to new version of the chromedriver.exe.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.chrome_driver.ChromeDriver.is_downloaded">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_downloaded</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">download_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_files</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/chrome_driver.html#ChromeDriver.is_downloaded"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.chrome_driver.ChromeDriver.is_downloaded" title="Permalink to this definition"></a></dt>
+<dd><p>Checks if the download is done by seeing with dir has
+a new number of files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>download_path</strong> (<em>str</em>) – Path to download dirs.</p></li>
+<li><p><strong>current_files</strong> (<em>int</em>) – Number of files in <cite>path_download</cite>
+before download.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Exists a new file in <cite>path_download</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-src">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src" title="Permalink to this heading"></a></h2>
+<p>Module that creates the Webdriver.</p>
+<p>In case of chrome update it will automatically download the new compatible
+webdriver version.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="src" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Frederico Gago.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

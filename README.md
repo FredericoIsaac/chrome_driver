@@ -1,51 +1,72 @@
 # Webdriver Package
 
-Create a webdriver, focus on Chrome webdriver.
+The Chrome Driver Downloader is a Python module that simplifies the process
+of creating a Selenium webdriver for the Google Chrome browser.
 
-If webdriver is outdated ill search for a new one and download.
-Download url files and rename download files. 
+It checks if the current version of the Chrome browser is compatible
+with the installed chromedriver and downloads a new version if necessary.
 
+## Installation
 
-## TODO
-
-* Add unit test.
-
-
-## Example Usage
-
-### How to Install
+To install the module, run the following command:
 
 ```shell
-  # ./ChromeDriver
-  pip install -e .
+pip install chrome-driver-exe-update
 ```
 
-### Usage
+## Usage
+
+The module can be used with command line arguments or by importing it
+in a Python script. Here are some examples:
+
+### Command line
+
+To run the module from the command line, use the following command:
+
+```shell
+python -m chrome-driver-exe-update -d [DOWNLOADS_PATH] -h [HEADLESS] -e [DRIVER_EXECUTABLE_PATH] -s [SOFTWARE_DIR] -t [DOWNLOADS_TYPE]
+```
+
+where:
+
+* [DOWNLOADS_PATH] is the path where downloaded files will be saved
+* [HEADLESS] is a boolean indicating whether to run the browser in headless mode
+* [DRIVER_EXECUTABLE_PATH] is the path to the chromedriver executable (optional)
+* [SOFTWARE_DIR] is the path where Chrome is installed (optional)
+* [DOWNLOADS_TYPE] is the type of file to be downloaded (optional)
+
+### Python script
+
+To use the module in a Python script, import it and create an instance
+of the ChromeDriver class, passing the required arguments:
 
 ```python
-from src import chrome_driver
+from src.chrome_driver import ChromeDriver
 
-driver = chrome_driver.ChromeDriver(
-  "temp",
-  True,
-  None,
-  "_software",
-  "application/pdf"
-)
+downloads_path = "[DOWNLOADS_PATH]"
+headless = "[HEADLESS]"
+driver_executable = "[DRIVER_EXECUTABLE_PATH]"
+software_dir = "[SOFTWARE_DIR]"
+downloads_type = "[DOWNLOADS_TYPE]"
 
+driver = ChromeDriver(downloads_path, headless, driver_executable, software_dir, downloads_type)
 driver.create_driver()
 ```
 
+## License
+
+The Chrome Driver Downloader is released under the MIT License.
+See LICENSE for more information.
 
 Change Log
 ----------
 
 * 0.1.0
-  * Change: Start production.
+    * Change: Start production.
 * 0.1.9
-  * Change: Download a new version of chromedriver if current oudated.
+    * Change: Download a new version of chromedriver if current oudated.
 * 0.2.0
-  * Change: Refactor code to add upload package to pypi
+    * Change: Refactor code to add upload package to pypi
 
 Meta
 ----
