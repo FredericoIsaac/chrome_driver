@@ -1,7 +1,7 @@
 import unittest
 import os
 from unittest.mock import patch
-from src.chrome_driver import ChromeDriver
+from chrome_driver_exe_update.chrome_driver import ChromeDriver
 
 
 class ChromeDriverTestCase(unittest.TestCase):

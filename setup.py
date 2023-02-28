@@ -6,8 +6,8 @@ with open(os.path.join(os.path.dirname(__file__), "README.md"), encoding="utf-8"
     readme = f.read()
 
 setup(
-    name="chrome_driver_exe_update",
-    version="0.2.3",
+    name="chrome-driver-exe-update",
+    version="0.2.5",
     license='MIT',
     description=readme,
     long_description_content_type="text/markdown",
@@ -25,7 +25,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "chrome-driver-exe-update=src.cli:main",
+            "chrome-driver-exe-update=chrome_driver_exe_update.cli:main",
         ],
     },
 )

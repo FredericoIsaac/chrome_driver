@@ -41,7 +41,7 @@ To use the module in a Python script, import it and create an instance
 of the ChromeDriver class, passing the required arguments:
 
 ```python
-from src.chrome_driver import ChromeDriver
+from chrome_driver_exe_update.chrome_driver import ChromeDriver
 
 downloads_path = "[DOWNLOADS_PATH]"
 headless = "[HEADLESS]"

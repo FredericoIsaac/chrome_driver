@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.abspath('..'))
 project = 'Chrome Driver EXE Update'
 copyright = '2023, Frederico Gago'
 author = 'Frederico Gago'
-release = '0.2.3'
+release = '0.2.5'
 
 # -- General configuration ---------------------------------------------------
 
